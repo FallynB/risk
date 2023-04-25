@@ -208,7 +208,7 @@ class Board(object):
                 path.reverse()
                 return path
 
-            for neighbor in self.neighbors(y):
+            for neighbor in self.neighbors(val):
                 if neighbor.territory_id not in visited:
                     queue.append(neighbor.territory_id)
                     visited[neighbor.territory_id] = val
