@@ -146,9 +146,9 @@ class Board(object):
         '''
         if len(path < 2):
             return False
-        pid = self.owner(path[0])
-        for tid in path[1:]:
-            if self.owner(tid) == pid:
+        player_id = self.owner(path[0])
+        for territory_id in path[1:]:
+            if self.owner(territory_id) == player_id:
                 return False
         return self.is_valid_path(path)
 
@@ -163,13 +163,13 @@ class Board(object):
         Returns:
             bool: the number of enemy armies in the path
         '''
-        if self.is_valid_attack_path(path) is not True:
-            return False
-        else:
+        if self.is_valid_attack_path(path):
             amount = 0
             for item in path[1:]:
                 amount += self.armies(item)
             return amount
+        else:
+            return False
 
 
     def shortest_path(self, source, target):
@@ -188,29 +188,31 @@ class Board(object):
         Returns:
             [int]: a valid path between source and target that has minimum length; this path is guaranteed to exist
         '''
-        # set up 
-        dictionary = {}
-        dictionary[source] = source 
-
+        path = []
+        if source == target:
+            path.append(source)
+            return path
         queue = deque()
-        queue.append(source)
+        visited = {}
 
-        visited = set()
-        visited.add(source)
+        queue.append(source)
+        visited[source] = None
 
         while queue:
-            tnow = queue.popleft()
-            if twnow == target:
-                return dictionary[tnow]
-            for territory in risk.definitions.territory_neighbors[current_territory]:
-                if territory not in visited:
-                    visited.add(territory)
-                    cp = copy.copy(dictionary[tnow])
-                    cp.append(territory)
-                    dictionary[territory] = cp
-                    queue.append(territory)
-        return None
+            val = queue.popleft()
 
+            if val == target:
+                path = [target]
+                while path[-1] != source:
+                    path.append(visited[path[-1]])
+                path.reverse()
+                return path
+
+            for neighbor in self.neighbors(y):
+                if neighbor.territory_id not in visited:
+                    queue.append(neighbor.territory_id)
+                    visited[neighbor.territory_id] = val
+        return []
 
     def can_fortify(self, source, target):
         '''
@@ -264,7 +266,7 @@ class Board(object):
         attacker = self.owner(source)
 
         while queue:
-            (cost, path) = heapq.heappop(q)
+            (cost, path) = heapq.heappop(queue)
             valid = path[-1]
 
             if valid == target:
@@ -274,13 +276,13 @@ class Board(object):
             visited.add(valid)
 
             for neighbor in self.neighbors(valid):
-                tid = neighbor.territory_id
+                territory_id = neighbor.territory_id
                 owner = self.owner(territory_id)
                 if owner == attacker:
                     continue
-                np = path + [tid]
+                np = path + [territory_id]
                 if self.is_valid_attack_path(np):
-                    heapq.heappush(q, (self.cost_of_attack_path(np), np))
+                    heapq.heappush(queue, (self.cost_of_attack_path(np), np))
         return None
 
     def can_attack(self, source, target):
