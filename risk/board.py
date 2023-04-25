@@ -144,7 +144,7 @@ class Board(object):
         Returns:
             bool: True if the path is an attack path
         '''
-        if len(path < 2):
+        if len(path) < 2:
             return False
         player_id = self.owner(path[0])
         for territory_id in path[1:]:
