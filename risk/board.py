@@ -143,7 +143,7 @@ class Board(object):
             bool: True if the path is an attack path
         '''
         if len(path < 2):
-                return False
+            return False
         pid = self.owner(path[0])
         for tid in path[1:]:
             if self.owner(tid) == pid:
