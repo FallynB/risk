@@ -1,6 +1,8 @@
 import os
 import random
 from collections import namedtuple
+import heapq
+from collections import deque
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
