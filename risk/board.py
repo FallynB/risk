@@ -243,7 +243,7 @@ class Board(object):
             for neighbor in self.friendly_neighbors(now):
                 if neighbor.territory_id not in visited:
                     queue.append(neighbor.territory_id)
-                return False
+        return False
 
     def cheapest_attack_path(self, source, target):
         '''
